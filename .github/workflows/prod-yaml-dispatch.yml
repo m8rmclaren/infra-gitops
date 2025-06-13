@@ -1,0 +1,57 @@
+name: Prod YAML Updater (dispatch)
+
+on:
+  repository_dispatch:
+    types: [new-prod-image]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+
+jobs:
+  tag:
+    runs-on: ubuntu-latest
+    permissions:
+      # Give the default GITHUB_TOKEN write permission to commit and push the
+      # added or changed files to the repository.
+      contents: write
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Update API Image Repo
+      id: apirepoupdate
+      uses: mikefarah/yq@bbdd97482f2d439126582a59689eb1c855944955 # v4.44.3
+      with:
+        cmd: yq eval '.api.image.repository = "${{ github.event.client_payload.api_registry }}"' -i 'azure/dev/simple-environment-service/values.yaml'
+
+    - name: Update API Image Version
+      id: apiimageupdate
+      uses: mikefarah/yq@bbdd97482f2d439126582a59689eb1c855944955 # v4.44.3
+      with:
+        cmd: yq eval '.api.image.tag = "${{ github.event.client_payload.api_tag }}"' -i 'azure/dev/simple-environment-service/values.yaml'
+
+    - name: Update UI Image Repo
+      id: uirepoupdate
+      uses: mikefarah/yq@bbdd97482f2d439126582a59689eb1c855944955 # v4.44.3
+      with:
+        cmd: yq eval '.ui.image.repository = "${{ github.event.client_payload.ui_registry }}"' -i 'azure/dev/simple-environment-service/values.yaml'
+
+    - name: Update UI Image Version
+      id: uiimageupdate
+      uses: mikefarah/yq@bbdd97482f2d439126582a59689eb1c855944955 # v4.44.3
+      with:
+        cmd: yq eval '.ui.image.tag = "${{ github.event.client_payload.ui_tag }}"' -i 'azure/dev/simple-environment-service/values.yaml'
+
+    - name: Copy dev to prod
+      id: copy
+      shell: bash
+      run: |
+        if [ -d "azure/prod" ]; then
+          rm -rf azure/prod
+        fi
+        cp -r azure/dev azure/prod
+      
+    - uses: stefanzweifel/git-auto-commit-action@v4
+      with:
+        commit_message: "chore(release): Bump api to ${{ github.event.client_payload.api_tag }} and ui to ${{ github.event.client_payload.ui_tag }}."  
+
+
