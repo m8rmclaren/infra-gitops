@@ -45,9 +45,9 @@ ingress:
   annotations: {}
     # kubernetes.io/tls-acme: "true"
   host: example.com
-  # Include www.<host> in the list of hosts on the Ingress - primarily to enable cert-manager ingress shim to issue
-  # certificate with www.<host> DNS SAN
-  addwww: false
+  # List of hostname strings to add in the list of hosts on the Ingress - primarily to enable cert-manager ingress 
+  # shim to issue certificate with www.<host> DNS SAN  
+  additionalTLSHosts: []
   enableTls: false
 
 resources: {}
