@@ -17,29 +17,17 @@ jobs:
     steps:
     - uses: actions/checkout@v4
 
-    - name: Update API Image Repo
-      id: apirepoupdate
+    - name: Update Image Repo
+      id: repoupdate
       uses: mikefarah/yq@bbdd97482f2d439126582a59689eb1c855944955 # v4.44.3
       with:
-        cmd: yq eval '.api.image.repository = "${{ github.event.client_payload.api_registry }}"' -i 'azure/dev/simple-environment-service/values.yaml'
+        cmd: yq eval '.image.repository = "${{ github.event.client_payload.registry }}"' -i 'dev/website/values.yaml'
 
-    - name: Update API Image Version
-      id: apiimageupdate
+    - name: Update Image Version
+      id: imageupdate
       uses: mikefarah/yq@bbdd97482f2d439126582a59689eb1c855944955 # v4.44.3
       with:
-        cmd: yq eval '.api.image.tag = "${{ github.event.client_payload.api_tag }}"' -i 'azure/dev/simple-environment-service/values.yaml'
-
-    - name: Update UI Image Repo
-      id: uirepoupdate
-      uses: mikefarah/yq@bbdd97482f2d439126582a59689eb1c855944955 # v4.44.3
-      with:
-        cmd: yq eval '.ui.image.repository = "${{ github.event.client_payload.ui_registry }}"' -i 'azure/dev/simple-environment-service/values.yaml'
-
-    - name: Update UI Image Version
-      id: uiimageupdate
-      uses: mikefarah/yq@bbdd97482f2d439126582a59689eb1c855944955 # v4.44.3
-      with:
-        cmd: yq eval '.ui.image.tag = "${{ github.event.client_payload.ui_tag }}"' -i 'azure/dev/simple-environment-service/values.yaml'
+        cmd: yq eval '.appVersion = "${{ github.event.client_payload.tag }}"' -i 'dev/website/Chart.yaml'
 
     - name: Copy dev to prod
       id: copy

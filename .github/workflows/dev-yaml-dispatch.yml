@@ -26,17 +26,15 @@ jobs:
       id: repoupdate
       uses: mikefarah/yq@bbdd97482f2d439126582a59689eb1c855944955 # v4.44.3
       with:
-        # component can either be ui or api
         cmd: yq eval '.image.repository = "${{ github.event.client_payload.registry }}"' -i 'dev/website/values.yaml'
 
     - name: Update Image Version
       id: imageupdate
       uses: mikefarah/yq@bbdd97482f2d439126582a59689eb1c855944955 # v4.44.3
       with:
-        # component can either be ui or api
         cmd: yq eval '.appVersion = "${{ github.event.client_payload.tag }}"' -i 'dev/website/Chart.yaml'
       
     - uses: stefanzweifel/git-auto-commit-action@v4
       with:
-        commit_message: "chore(gitops): Bump 'website' [${{ github.event.client_payload.registry }}] to ${{ github.event.client_payload.tag }}"  
+        commit_message: "chore(gitops): Bump website [${{ github.event.client_payload.registry }}] to ${{ github.event.client_payload.tag }}"  
 
