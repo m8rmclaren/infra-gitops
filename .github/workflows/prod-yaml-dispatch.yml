@@ -17,29 +17,34 @@ jobs:
     steps:
     - uses: actions/checkout@v4
 
+    # Always make sure we're at the head
+    - name: Git Pull
+      shell: bash
+      run: git pull
+
     - name: Update Image Repo
       id: repoupdate
       uses: mikefarah/yq@bbdd97482f2d439126582a59689eb1c855944955 # v4.44.3
       with:
-        cmd: yq eval '.image.repository = "${{ github.event.client_payload.registry }}"' -i 'dev/website/values.yaml'
+        cmd: yq eval '.image.repository = "${{ github.event.client_payload.ui_registry }}"' -i 'dev/website/values.yaml'
 
     - name: Update Image Version
       id: imageupdate
       uses: mikefarah/yq@bbdd97482f2d439126582a59689eb1c855944955 # v4.44.3
       with:
-        cmd: yq eval '.appVersion = "${{ github.event.client_payload.tag }}"' -i 'dev/website/Chart.yaml'
+        cmd: yq eval '.appVersion = "${{ github.event.client_payload.ui_tag }}"' -i 'dev/website/Chart.yaml'
 
     - name: Copy dev to prod
       id: copy
       shell: bash
       run: |
-        if [ -d "azure/prod" ]; then
-          rm -rf azure/prod
+        if [ -d "prod" ]; then
+          rm -rf prod
         fi
-        cp -r azure/dev azure/prod
+        cp -r dev prod
       
     - uses: stefanzweifel/git-auto-commit-action@v4
       with:
-        commit_message: "chore(release): Bump api to ${{ github.event.client_payload.api_tag }} and ui to ${{ github.event.client_payload.ui_tag }}."  
+        commit_message: "chore(gitops): Promote dev -> prod (tag ${{ github.event.client_payload.tag }})"  
 
 
