@@ -3,4 +3,4 @@ name: website
 description: Website
 type: application
 version: 1.0.0
-appVersion: "1.1.0-rc.21"
+appVersion: "1.1.0-rc.22"
