@@ -4,9 +4,9 @@ Ingress for Hydra public endpoints
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: {{ include "hydra.fullname" . }}-public
+  name: {{ include "auth.fullname" . }}-public
   labels:
-    {{- include "hydra.labels" . | nindent 4 }}
+    {{- include "auth.labels" . | nindent 4 }}
   {{- with .Values.ingress.annotations }}
   annotations:
     {{- toYaml . | nindent 4 }}
@@ -16,37 +16,37 @@ spec:
   ingressClassName: {{ . | quote }}
   {{- end }}
   rules:
-  - host: {{ .Values.gateway.hostname | quote }}
+  - host: {{ .Values.hostname | quote }}
     http:
       paths:
       - path: /oauth2
         pathType: Prefix
         backend:
           service:
-            name: {{ include "hydra.publicServiceName" . }}
+            name: {{ include "auth.publicServiceName" . }}
             port:
-              number: {{ .Values.hydra.service.public.port }}
+              number: {{ .Values.auth.service.public.port }}
       - path: /.well-known
         pathType: Prefix
         backend:
           service:
-            name: {{ include "hydra.publicServiceName" . }}
+            name: {{ include "auth.publicServiceName" . }}
             port:
-              number: {{ .Values.hydra.service.public.port }}
+              number: {{ .Values.auth.service.public.port }}
       - path: /userinfo
         pathType: Prefix
         backend:
           service:
-            name: {{ include "hydra.publicServiceName" . }}
+            name: {{ include "auth.publicServiceName" . }}
             port:
-              number: {{ .Values.hydra.service.public.port }}
+              number: {{ .Values.auth.service.public.port }}
       - path: /credentials
         pathType: Prefix
         backend:
           service:
-            name: {{ include "hydra.publicServiceName" . }}
+            name: {{ include "auth.publicServiceName" . }}
             port:
-              number: {{ .Values.hydra.service.public.port }}
+              number: {{ .Values.auth.service.public.port }}
 
 ---
 {{- /*
@@ -56,9 +56,9 @@ Ingress for Hydra admin endpoint with prefix-strip rewrite
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: {{ include "hydra.fullname" . }}-admin
+  name: {{ include "auth.fullname" . }}-admin
   labels:
-    {{- include "hydra.labels" . | nindent 4 }}
+    {{- include "auth.labels" . | nindent 4 }}
   annotations:
     nginx.ingress.kubernetes.io/use-regex: "true"
     nginx.ingress.kubernetes.io/rewrite-target: /$2
@@ -70,15 +70,15 @@ spec:
   ingressClassName: {{ . | quote }}
   {{- end }}
   rules:
-  - host: {{ .Values.gateway.hostname | quote }}
+  - host: {{ .Values.hostname | quote }}
     http:
       paths:
-      - path: /hydra-admin(/|$)(.*)
+      - path: /auth-admin(/|$)(.*)
         # regex paths require ImplementationSpecific for NGINX
         pathType: ImplementationSpecific
         backend:
           service:
-            name: {{ include "hydra.adminServiceName" . }}
+            name: {{ include "auth.adminServiceName" . }}
             port:
-              number: {{ .Values.hydra.service.admin.port }}
+              number: {{ .Values.auth.service.admin.port }}
 

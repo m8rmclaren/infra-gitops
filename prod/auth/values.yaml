@@ -1,7 +1,4 @@
-gateway:
-  hostname: auth.example.com
-  name: gateway
-  namespace: ns
+hostname: auth.example.com
 
 hydra:
   hydra:
