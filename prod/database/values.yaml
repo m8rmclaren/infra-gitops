@@ -1,0 +1,43 @@
+# postgres:
+#   fullnameOverride: <postgresChartFullname>
+#   auth:
+#     enablePostgresUser: true
+#     replicationUsername: repl-user
+#     existingSecret: <postgresSecretName>
+#     secretKeys:
+#       adminPasswordKey: <postgresAdminPasswordKey>
+#       replicationPasswordKey: <postgresReplicationPasswordKey>
+#   primary:
+    # nodeSelector:
+    #   kubernetes.io/os: linux
+    #   agentpool: <args.AgentPoolName>
+    # tolerations:
+    #   - <args.Toleration>
+    #extraEnvVarsSecret: postgres-passwords # Same name set within secret.yaml
+    #initdb:
+    #  scripts:
+    #    # Env vars are exported by the extraEnvVarsSecret secret - this is created within the chart at secret.yaml
+    #    init-user-db.sh: |-
+    #      #!/bin/bash
+    #      set -e
+    #      export PGPASSWORD="$POSTGRES_PASSWORD"
+    #      psql -v ON_ERROR_STOP=1 --username "$POSTGRESQL_USERNAME" <<-EOSQL
+    #        CREATE DATABASE {{.HydraDatabaseName}};
+    #        CREATE USER {{.HydraDatabaseUsername}} WITH PASSWORD '$HYDRA_PASSWORD';
+    #        GRANT ALL PRIVILEGES ON DATABASE {{.HydraDatabaseName}} TO {{.HydraDatabaseUsername}};
+
+    #        \c {{.HydraDatabaseName}}
+    #        GRANT USAGE, CREATE ON SCHEMA public TO {{.HydraDatabaseUsername}};
+    #        ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT ALL ON TABLES TO {{.HydraDatabaseUsername}};
+    #      EOSQL
+  # readReplicas:
+  #   nodeSelector:
+  #     kubernetes.io/os: linux
+  #     agentpool: <args.AgentPoolName>
+  #   tolerations:
+  #     - <args.Toleration>
+
+
+# This is to override the chart name.
+nameOverride: ""
+fullnameOverride: ""

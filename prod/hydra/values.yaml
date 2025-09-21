@@ -1,0 +1,19 @@
+gateway:
+  hostname: auth.example.com
+  name: gateway
+  namespace: ns
+
+hydra:
+  hydra:
+    deployment:
+      labels:
+        app.kubernetes.io/app: hydra
+    config:
+      dsn: memory
+      strategies:
+        access_token: jwt
+      urls:
+        consent: https://auth.example.com/consent
+        login: https://auth.example.com/login
+        self:
+          issuer: https://auth.example.com/
