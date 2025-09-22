@@ -14,3 +14,7 @@ hydra:
         login: https://auth.example.com/login
         self:
           issuer: https://auth.example.com/
+
+ingress:
+  annotations: {}
+  className: nginx
