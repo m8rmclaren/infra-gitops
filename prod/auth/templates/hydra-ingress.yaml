@@ -15,6 +15,15 @@ spec:
   {{- with .Values.ingress.className }}
   ingressClassName: {{ . | quote }}
   {{- end }}
+  {{- if .Values.ingress.enableTls }}
+  tls:
+    - hosts:
+        - {{ .Values.ingress.host }}
+        {{- range $host := .Values.ingress.additionalTLSHosts }}
+        - {{ $host }}
+        {{- end }}
+      secretName: {{ $fullName }}-tls
+  {{- end }}
   rules:
   - host: {{ .Values.hostname | quote }}
     http:
@@ -68,6 +77,15 @@ metadata:
 spec:
   {{- with .Values.ingress.className }}
   ingressClassName: {{ . | quote }}
+  {{- end }}
+  {{- if .Values.ingress.enableTls }}
+  tls:
+    - hosts:
+        - {{ .Values.ingress.host }}
+        {{- range $host := .Values.ingress.additionalTLSHosts }}
+        - {{ $host }}
+        {{- end }}
+      secretName: {{ $fullName }}-tls
   {{- end }}
   rules:
   - host: {{ .Values.hostname | quote }}

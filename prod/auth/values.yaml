@@ -20,3 +20,6 @@ hydra:
 ingress:
   annotations: {}
   className: nginx
+  # List of hostname strings to add in the list of hosts on the Ingress - primarily to enable cert-manager ingress 
+  # shim to issue certificate with www.<host> DNS SAN  
+  additionalTLSHosts: [] 
