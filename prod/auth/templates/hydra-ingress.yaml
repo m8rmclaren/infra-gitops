@@ -23,30 +23,30 @@ spec:
         pathType: Prefix
         backend:
           service:
-            name: {{ include "auth.publicServiceName" . }}
+            name: {{ include "hydra.publicServiceName" . }}
             port:
               number: {{ .Values.auth.service.public.port }}
       - path: /.well-known
         pathType: Prefix
         backend:
           service:
-            name: {{ include "auth.publicServiceName" . }}
+            name: {{ include "hydra.publicServiceName" . }}
             port:
-              number: {{ .Values.auth.service.public.port }}
+              number: {{ .Values.hydra.service.public.port }}
       - path: /userinfo
         pathType: Prefix
         backend:
           service:
-            name: {{ include "auth.publicServiceName" . }}
+            name: {{ include "hydra.publicServiceName" . }}
             port:
-              number: {{ .Values.auth.service.public.port }}
+              number: {{ .Values.hydra.service.public.port }}
       - path: /credentials
         pathType: Prefix
         backend:
           service:
-            name: {{ include "auth.publicServiceName" . }}
+            name: {{ include "hydra.publicServiceName" . }}
             port:
-              number: {{ .Values.auth.service.public.port }}
+              number: {{ .Values.hydra.service.public.port }}
 
 ---
 {{- /*
@@ -78,7 +78,7 @@ spec:
         pathType: ImplementationSpecific
         backend:
           service:
-            name: {{ include "auth.adminServiceName" . }}
+            name: {{ include "hydra.adminServiceName" . }}
             port:
-              number: {{ .Values.auth.service.admin.port }}
+              number: {{ .Values.hydra.service.admin.port }}
 

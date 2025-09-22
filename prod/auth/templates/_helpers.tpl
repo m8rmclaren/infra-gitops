@@ -53,14 +53,14 @@ app.kubernetes.io/instance: {{ .Release.Name }}
 {{/*
 Calculate the name of the public service
 */}}
-{{- define "auth.publicServiceName" -}}
+{{- define "hydra.publicServiceName" -}}
 {{- $name := "" }}
-{{- if .Values.auth.fullnameOverride }}
-    {{- $name = .Values.auth.fullnameOverride }}
+{{- if .Values.hydra.fullnameOverride }}
+    {{- $name = .Values.hydra.fullnameOverride }}
     {{- $name = printf "%s-public" $name }}
     {{- $name }}
 {{- else }}
-    {{- $chartName := default .Values.auth.nameOverride .Chart.Name }}
+    {{- $chartName := default .Values.hydra.nameOverride .Chart.Name }}
     {{- if contains $chartName .Release.Name }}
         {{- $name = .Release.Name }}
     {{- else }}
@@ -75,14 +75,14 @@ Calculate the name of the public service
 {{/*
 Calculate the name of the admin service
 */}}
-{{- define "auth.adminServiceName" -}}
+{{- define "hydra.adminServiceName" -}}
 {{- $name := "" }}
-{{- if .Values.auth.fullnameOverride }}
-    {{- $name = .Values.auth.fullnameOverride }}
+{{- if .Values.hydra.fullnameOverride }}
+    {{- $name = .Values.hydra.fullnameOverride }}
     {{- $name = printf "%s-admin" $name }}
     {{- $name }}
 {{- else }}
-    {{- $chartName := default .Values.auth.nameOverride .Chart.Name }}
+    {{- $chartName := default .Values.hydra.nameOverride .Chart.Name }}
     {{- if contains $chartName .Release.Name }}
         {{- $name = .Release.Name }}
     {{- else }}
