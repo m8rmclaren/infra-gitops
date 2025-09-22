@@ -25,7 +25,7 @@ spec:
           service:
             name: {{ include "hydra.publicServiceName" . }}
             port:
-              number: {{ .Values.auth.service.public.port }}
+              number: {{ .Values.hydra.service.public.port }}
       - path: /.well-known
         pathType: Prefix
         backend:
