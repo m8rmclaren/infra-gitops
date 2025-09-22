@@ -1,3 +1,5 @@
+fullnameOverride: ""
+
 hostname: auth.example.com
 
 hydra:
