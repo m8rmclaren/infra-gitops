@@ -18,7 +18,7 @@ spec:
   {{- if .Values.ingress.enableTls }}
   tls:
     - hosts:
-        - {{ .Values.ingress.host }}
+        - {{ .Values.ingress.hostname }}
         {{- range $host := .Values.ingress.additionalTLSHosts }}
         - {{ $host }}
         {{- end }}
@@ -81,7 +81,7 @@ spec:
   {{- if .Values.ingress.enableTls }}
   tls:
     - hosts:
-        - {{ .Values.ingress.host }}
+        - {{ .Values.ingress.hostname }}
         {{- range $host := .Values.ingress.additionalTLSHosts }}
         - {{ $host }}
         {{- end }}
