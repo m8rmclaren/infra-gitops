@@ -22,7 +22,7 @@ spec:
         {{- range $host := .Values.ingress.additionalTLSHosts }}
         - {{ $host }}
         {{- end }}
-      secretName: {{ $fullName }}-tls
+      secretName: {{ include "auth.fullname" . }}-tls
   {{- end }}
   rules:
   - host: {{ .Values.hostname | quote }}
@@ -85,7 +85,7 @@ spec:
         {{- range $host := .Values.ingress.additionalTLSHosts }}
         - {{ $host }}
         {{- end }}
-      secretName: {{ $fullName }}-tls
+      secretName: {{ include "auth.fullname" . }}-tls
   {{- end }}
   rules:
   - host: {{ .Values.hostname | quote }}
