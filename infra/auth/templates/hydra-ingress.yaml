@@ -4,7 +4,7 @@ Ingress for Hydra public endpoints
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: {{ include "auth.fullname" . }}-public
+  name: {{ include "auth.fullname" . }}-hydra-public
   labels:
     {{- include "auth.labels" . | nindent 4 }}
   {{- with .Values.ingress.annotations }}
@@ -72,7 +72,7 @@ Ingress for Hydra admin endpoint with prefix-strip rewrite
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: {{ include "auth.fullname" . }}-admin
+  name: {{ include "auth.fullname" . }}-hydra-admin
   labels:
     {{- include "auth.labels" . | nindent 4 }}
   annotations:
