@@ -26,8 +26,8 @@ kratos:
           - https://app.my-app.com/dashboard
       identity:
         schemas:
-          - id: default
-            url: file://stub/identity.schema.json
+        - id: default
+          url: file:///etc/config/kratos/identity.schema.json
 
 ingress:
   annotations: {}
