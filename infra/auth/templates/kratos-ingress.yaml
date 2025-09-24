@@ -77,7 +77,7 @@ spec:
   - host: {{ .Values.hostname | quote }}
     http:
       paths:
-      - path: /auth-admin(/|$)(.*)
+      - path: /kratos-admin(/|$)(.*)
         # regex paths require ImplementationSpecific for NGINX
         pathType: ImplementationSpecific
         backend:
