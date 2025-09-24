@@ -1,0 +1,89 @@
+{{- /*
+Ingress for Kratos public endpoints
+*/ -}}
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{ include "auth.fullname" . }}-public
+  labels:
+    {{- include "auth.labels" . | nindent 4 }}
+  {{- with .Values.ingress.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+spec:
+  {{- with .Values.ingress.className }}
+  ingressClassName: {{ . | quote }}
+  {{- end }}
+  {{- if .Values.ingress.enableTls }}
+  tls:
+    - hosts:
+        - {{ .Values.hostname }}
+        {{- range $host := .Values.ingress.additionalTLSHosts }}
+        - {{ $host }}
+        {{- end }}
+      secretName: {{ include "auth.fullname" . }}-tls
+  {{- end }}
+  rules:
+  - host: {{ .Values.hostname | quote }}
+    http:
+      paths:
+      - path: /oauth2
+        pathType: Prefix
+        backend:
+          service:
+            name: {{ include "kratos.publicServiceName" . }}
+            port:
+              number: {{ .Values.kratos.service.public.port }}
+      - path: /.well-known/ory/webauthn.js
+        pathType: Prefix
+        backend:
+          service:
+            name: {{ include "kratos.publicServiceName" . }}
+            port:
+              number: {{ .Values.kratos.service.public.port }}
+
+---
+{{- /*
+Ingress for Kratos admin endpoint with prefix-strip rewrite
+(works with NGINX using regex + rewrite-target)
+*/ -}}
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{ include "auth.fullname" . }}-admin
+  labels:
+    {{- include "auth.labels" . | nindent 4 }}
+  annotations:
+    nginx.ingress.kubernetes.io/use-regex: "true"
+    nginx.ingress.kubernetes.io/rewrite-target: /$2
+    {{- with .Values.ingress.annotations }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
+spec:
+  {{- with .Values.ingress.className }}
+  ingressClassName: {{ . | quote }}
+  {{- end }}
+  {{- if .Values.ingress.enableTls }}
+  tls:
+    - hosts:
+        - {{ .Values.hostname }}
+        {{- range $host := .Values.ingress.additionalTLSHosts }}
+        - {{ $host }}
+        {{- end }}
+      secretName: {{ include "auth.fullname" . }}-tls
+  {{- end }}
+  rules:
+  - host: {{ .Values.hostname | quote }}
+    http:
+      paths:
+      - path: /auth-admin(/|$)(.*)
+        # regex paths require ImplementationSpecific for NGINX
+        pathType: ImplementationSpecific
+        backend:
+          service:
+            name: {{ include "kratos.adminServiceName" . }}
+            port:
+              number: {{ .Values.kratos.service.admin.port }}
+
+

@@ -1,0 +1,14 @@
+apiVersion: v2
+name: auth
+description: Auth system for my personal projects (backed by Ory Hydra & Kratos)
+type: application
+version: 1.0.0
+appVersion: "1.0.0"
+
+dependencies:
+  - name: hydra
+    version: "0.58.0"
+    repository: "https://k8s.ory.sh/helm/charts"
+  - name: kratos
+    version: "0.58.0"
+    repository: "https://k8s.ory.sh/helm/charts"
