@@ -35,6 +35,13 @@ spec:
             name: {{ include "kratos.publicServiceName" . }}
             port:
               number: {{ .Values.kratos.service.public.port }}
+      - path: /schemas
+        pathType: Prefix
+        backend:
+          service:
+            name: {{ include "kratos.publicServiceName" . }}
+            port:
+              number: {{ .Values.kratos.service.public.port }}
       - path: /.well-known/ory/webauthn.js
         pathType: Prefix
         backend:
