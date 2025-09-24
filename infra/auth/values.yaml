@@ -19,14 +19,15 @@ hydra:
 
 kratos:
   kratos:
-    selfservice:
-      default_browser_return_url: https://my-app.com/dashboard
-      allowed_return_urls:
-        - https://app.my-app.com/dashboard
-    identity:
-      schemas:
-        - id: default
-          url: file://stub/identity.schema.json
+    config:
+      selfservice:
+        default_browser_return_url: https://my-app.com/dashboard
+        allowed_return_urls:
+          - https://app.my-app.com/dashboard
+      identity:
+        schemas:
+          - id: default
+            url: file://stub/identity.schema.json
 
 ingress:
   annotations: {}
