@@ -28,7 +28,7 @@ spec:
   - host: {{ .Values.hostname | quote }}
     http:
       paths:
-      - path: /oauth2
+      - path: /self-service
         pathType: Prefix
         backend:
           service:
