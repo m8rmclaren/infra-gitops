@@ -1,0 +1,74 @@
+grafana:
+  grafana:
+    image:
+      repository: grafana/grafana-oss
+      tag: latest
+  nodeSelector: {}
+  service:
+    port: 3000
+  replicas: 1
+  strategy:
+    type: Recreate
+  tolerations: []
+  topologySpreadConstraints: []
+  type: ClusterIP
+kubernetesClusterDomain: cluster.local
+mongo:
+  mongo:
+    env:
+      mongoInitdbDatabase: health-auto-export
+      mongoInitdbRootPassword: password
+      mongoInitdbRootUsername: admin
+    image:
+      repository: mongo
+      tag: latest
+  nodeSelector: {}
+  service:
+    port: 27017
+  ports:
+  - name: "27017"
+    port: 27017
+    targetPort: 27017
+  replicas: 1
+  strategy:
+    type: Recreate
+  tolerations: []
+  topologySpreadConstraints: []
+  type: ClusterIP
+pvc:
+  grafanaClaim0:
+    storageRequest: 100Mi
+  mongodbData:
+    storageRequest: 100Mi
+server:
+  nodeSelector: {}
+  service:
+    port: 3001
+  replicas: 1
+  imagePullSecrets: []
+  server:
+    env:
+      mongoDb: health-auto-export
+      mongoHost: hae-mongo
+      mongoPassword: password
+      mongoPort: "27017"
+      mongoUsername: admin
+      nodeEnv: production
+      readToken: sk-jdo2adhseqxaz0no3esemfqgmamg1tdk
+      writeToken: sk-f5Hk7ydmhQq9WY566y5Ea8FyMRyu3euX
+    image:
+      repository: ghcr.io/m8rmclaren/health-auto-export-server
+      tag: ""
+  tolerations: []
+  topologySpreadConstraints: []
+  type: ClusterIP
+ingress:
+  enabled: false
+  className: "nginx"
+  annotations: {}
+  # kubernetes.io/tls-acme: "true"
+  host: example.com
+  # List of hostname strings to add in the list of hosts on the Ingress - primarily to enable cert-manager ingress 
+  # shim to issue certificate with www.<host> DNS SAN  
+  additionalTLSHosts: []
+  enableTls: false

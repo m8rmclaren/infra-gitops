@@ -106,4 +106,3 @@ spec:
             name: {{ include "hydra.adminServiceName" . }}
             port:
               number: {{ .Values.hydra.service.admin.port }}
-

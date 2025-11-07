@@ -1,0 +1,20 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "health-auto-export-server.fullname" . }}-server
+  labels:
+    io.kompose.service: server
+  {{- include "health-auto-export-server.labels" . | nindent 4 }}
+  annotations:
+    kompose.cmd: kompose convert -f docker-compose.yaml --out manifests
+    kompose.version: 1.37.0 (HEAD)
+spec:
+  type: {{ .Values.server.type }}
+  selector:
+    io.kompose.service: server
+    {{- include "health-auto-export-server.selectorLabels" . | nindent 4 }}
+  ports:
+    - port: {{ .Values.server.service.port }}
+      targetPort: http
+      protocol: TCP
+      name: http

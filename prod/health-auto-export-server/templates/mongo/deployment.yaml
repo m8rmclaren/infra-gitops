@@ -1,0 +1,58 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "health-auto-export-server.fullname" . }}-mongo
+  labels:
+    io.kompose.service: mongo
+  {{- include "health-auto-export-server.labels" . | nindent 4 }}
+  annotations:
+    kompose.cmd: kompose convert -f docker-compose.yaml --out manifests
+    kompose.version: 1.37.0 (HEAD)
+spec:
+  replicas: {{ .Values.mongo.replicas }}
+  strategy:
+    type: {{ .Values.mongo.strategy.type | quote }}
+  selector:
+    matchLabels:
+      io.kompose.service: mongo
+    {{- include "health-auto-export-server.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        io.kompose.service: mongo
+      {{- include "health-auto-export-server.selectorLabels" . | nindent 8 }}
+      annotations:
+        kompose.cmd: kompose convert -f docker-compose.yaml --out manifests
+        kompose.version: 1.37.0 (HEAD)
+    spec:
+      containers:
+      - env:
+        - name: MONGO_INITDB_DATABASE
+          value: {{ quote .Values.mongo.mongo.env.mongoInitdbDatabase }}
+        - name: MONGO_INITDB_ROOT_PASSWORD
+          value: {{ quote .Values.mongo.mongo.env.mongoInitdbRootPassword }}
+        - name: MONGO_INITDB_ROOT_USERNAME
+          value: {{ quote .Values.mongo.mongo.env.mongoInitdbRootUsername }}
+        - name: KUBERNETES_CLUSTER_DOMAIN
+          value: {{ quote .Values.kubernetesClusterDomain }}
+        image: {{ .Values.mongo.mongo.image.repository }}:{{ .Values.mongo.mongo.image.tag
+          | default .Chart.AppVersion }}
+        name: mongo
+        ports:
+        - name: http
+          containerPort: 27017
+          protocol: TCP
+        resources: {}
+        volumeMounts:
+        - mountPath: /data/db
+          name: mongodb-data
+      nodeSelector: {{- toYaml .Values.mongo.nodeSelector | nindent 8 }}
+      restartPolicy: Always
+      serviceAccountName: {{ include "health-auto-export-server.serviceAccountName" . }}
+      tolerations: {{- toYaml .Values.mongo.tolerations | nindent 8 }}
+      topologySpreadConstraints: {{- toYaml .Values.mongo.topologySpreadConstraints | nindent
+        8 }}
+      volumes:
+      - name: mongodb-data
+        persistentVolumeClaim:
+          claimName: {{ include "health-auto-export-server.fullname" . }}-mongodb-data

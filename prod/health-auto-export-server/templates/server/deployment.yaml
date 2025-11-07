@@ -1,0 +1,64 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "health-auto-export-server.fullname" . }}-server
+  labels:
+    io.kompose.service: server
+  {{- include "health-auto-export-server.labels" . | nindent 4 }}
+  annotations:
+    kompose.cmd: kompose convert -f docker-compose.yaml --out manifests
+    kompose.version: 1.37.0 (HEAD)
+spec:
+  replicas: {{ .Values.server.replicas }}
+  selector:
+    matchLabels:
+      io.kompose.service: server
+    {{- include "health-auto-export-server.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        io.kompose.service: server
+      {{- include "health-auto-export-server.selectorLabels" . | nindent 8 }}
+      annotations:
+        kompose.cmd: kompose convert -f docker-compose.yaml --out manifests
+        kompose.version: 1.37.0 (HEAD)
+    spec:
+      {{- with .Values.server.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      containers:
+      - env:
+        - name: MONGO_DB
+          value: {{ quote .Values.server.server.env.mongoDb }}
+        - name: MONGO_HOST
+          value: "{{ include "health-auto-export-server.fullname" . }}-mongo.{{ .Release.Namespace }}.svc.cluster.local"
+        - name: MONGO_PASSWORD
+          value: {{ quote .Values.server.server.env.mongoPassword }}
+        - name: MONGO_PORT
+          value: "{{ .Values.mongo.service.port }}"
+        - name: MONGO_USERNAME
+          value: {{ quote .Values.server.server.env.mongoUsername }}
+        - name: NODE_ENV
+          value: {{ quote .Values.server.server.env.nodeEnv }}
+        - name: READ_TOKEN
+          value: {{ quote .Values.server.server.env.readToken }}
+        - name: WRITE_TOKEN
+          value: {{ quote .Values.server.server.env.writeToken }}
+        - name: KUBERNETES_CLUSTER_DOMAIN
+          value: {{ quote .Values.kubernetesClusterDomain }}
+        image: {{ .Values.server.server.image.repository }}:{{ .Values.server.server.image.tag
+          | default .Chart.AppVersion }}
+        imagePullPolicy: Never
+        name: server
+        ports:
+        - name: http
+          containerPort: 3001
+          protocol: TCP
+        resources: {}
+      nodeSelector: {{- toYaml .Values.server.nodeSelector | nindent 8 }}
+      restartPolicy: Always
+      serviceAccountName: {{ include "health-auto-export-server.serviceAccountName" . }}
+      tolerations: {{- toYaml .Values.server.tolerations | nindent 8 }}
+      topologySpreadConstraints: {{- toYaml .Values.server.topologySpreadConstraints |
+        nindent 8 }}

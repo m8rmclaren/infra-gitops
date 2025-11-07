@@ -1,0 +1,52 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "health-auto-export-server.fullname" . }}-grafana
+  labels:
+    io.kompose.service: grafana
+  {{- include "health-auto-export-server.labels" . | nindent 4 }}
+  annotations:
+    kompose.cmd: kompose convert -f docker-compose.yaml --out manifests
+    kompose.version: 1.37.0 (HEAD)
+spec:
+  replicas: {{ .Values.grafana.replicas }}
+  strategy:
+    type: {{ .Values.grafana.strategy.type | quote }}
+  selector:
+    matchLabels:
+      io.kompose.service: grafana
+    {{- include "health-auto-export-server.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        io.kompose.service: grafana
+      {{- include "health-auto-export-server.selectorLabels" . | nindent 8 }}
+      annotations:
+        kompose.cmd: kompose convert -f docker-compose.yaml --out manifests
+        kompose.version: 1.37.0 (HEAD)
+    spec:
+      containers:
+      - env:
+        - name: KUBERNETES_CLUSTER_DOMAIN
+          value: {{ quote .Values.kubernetesClusterDomain }}
+        image: {{ .Values.grafana.grafana.image.repository }}:{{ .Values.grafana.grafana.image.tag
+          | default .Chart.AppVersion }}
+        name: grafana
+        ports:
+        - name: http
+          containerPort: 3000
+          protocol: TCP
+        resources: {}
+        volumeMounts:
+        - mountPath: /var/lib/grafana
+          name: grafana-claim0
+      nodeSelector: {{- toYaml .Values.grafana.nodeSelector | nindent 8 }}
+      restartPolicy: Always
+      serviceAccountName: {{ include "health-auto-export-server.serviceAccountName" . }}
+      tolerations: {{- toYaml .Values.grafana.tolerations | nindent 8 }}
+      topologySpreadConstraints: {{- toYaml .Values.grafana.topologySpreadConstraints |
+        nindent 8 }}
+      volumes:
+      - name: grafana-claim0
+        persistentVolumeClaim:
+          claimName: {{ include "health-auto-export-server.fullname" . }}-grafana-claim0
