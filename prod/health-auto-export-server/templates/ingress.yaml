@@ -1,6 +1,7 @@
 {{- if .Values.ingress.enabled -}}
 {{- $fullName := include "health-auto-export-server.fullname" . -}}
 {{- $grafanaPort := .Values.grafana.service.port -}}
+{{- $serverPort := .Values.server.service.port -}}
 {{- if and .Values.ingress.className (not (semverCompare ">=1.18-0" .Capabilities.KubeVersion.GitVersion)) }}
   {{- if not (hasKey .Values.ingress.annotations "kubernetes.io/ingress.class") }}
   {{- $_ := set .Values.ingress.annotations "kubernetes.io/ingress.class" .Values.ingress.className}}
@@ -40,4 +41,14 @@ spec:
                 name: {{ $fullName }}-grafana
                 port:
                   number: {{ $grafanaPort }}
+    - host: {{ .Values.ingress.host }}
+      http:
+        paths:
+          - path: /api
+            pathType: Prefix
+            backend:
+              service:
+                name: {{ $fullName }}-server
+                port:
+                  number: {{ $serverPort }}
 {{- end }}
