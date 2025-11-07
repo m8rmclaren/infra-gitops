@@ -49,7 +49,6 @@ spec:
           value: {{ quote .Values.kubernetesClusterDomain }}
         image: {{ .Values.server.server.image.repository }}:{{ .Values.server.server.image.tag
           | default .Chart.AppVersion }}
-        imagePullPolicy: Never
         name: server
         ports:
         - name: http
