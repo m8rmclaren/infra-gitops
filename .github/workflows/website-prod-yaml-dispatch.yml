@@ -38,13 +38,11 @@ jobs:
       id: copy
       shell: bash
       run: |
-        if [ -d "prod" ]; then
-          rm -rf prod
+        if [ -d "prod/website" ]; then
+          rm -rf prod/website
         fi
-        cp -r dev prod
+        cp -r dev/website prod/website
       
     - uses: stefanzweifel/git-auto-commit-action@v4
       with:
-        commit_message: "chore(gitops): Promote dev -> prod (tag ${{ github.event.client_payload.ui_tag }})"  
-
-
+        commit_message: "chore(gitops): New changes to Health Auto Export Server (tag ${{ github.event.client_payload.ui_tag }})"  
