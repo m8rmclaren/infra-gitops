@@ -65,7 +65,8 @@ server:
 ingress:
   enabled: false
   className: "nginx"
-  annotations: {}
+  annotations:
+    nginx.ingress.kubernetes.io/proxy-body-size: 200m
   # kubernetes.io/tls-acme: "true"
   host: example.com
   # List of hostname strings to add in the list of hosts on the Ingress - primarily to enable cert-manager ingress 
