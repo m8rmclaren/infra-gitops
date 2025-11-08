@@ -1,7 +1,6 @@
 {{- if .Values.ingress.enabled -}}
 {{- $fullName := include "health-auto-export-server.fullname" . -}}
 {{- $grafanaPort := .Values.grafana.service.port -}}
-{{- $serverPort := .Values.server.service.port -}}
 {{- if and .Values.ingress.className (not (semverCompare ">=1.18-0" .Capabilities.KubeVersion.GitVersion)) }}
   {{- if not (hasKey .Values.ingress.annotations "kubernetes.io/ingress.class") }}
   {{- $_ := set .Values.ingress.annotations "kubernetes.io/ingress.class" .Values.ingress.className}}
@@ -41,10 +40,42 @@ spec:
                 name: {{ $fullName }}-grafana
                 port:
                   number: {{ $grafanaPort }}
+---
+{{- $serverPort := .Values.server.service.port -}}
+{{- if and .Values.ingress.className (not (semverCompare ">=1.18-0" .Capabilities.KubeVersion.GitVersion)) }}
+  {{- if not (hasKey .Values.ingress.annotations "kubernetes.io/ingress.class") }}
+  {{- $_ := set .Values.ingress.annotations "kubernetes.io/ingress.class" .Values.ingress.className}}
+  {{- end }}
+{{- end }}
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{ $fullName }}
+  labels:
+    {{- include "health-auto-export-server.labels" . | nindent 4 }}
+  {{- with .Values.ingress.annotations }}
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /api
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+spec:
+  {{- if and .Values.ingress.className (semverCompare ">=1.18-0" .Capabilities.KubeVersion.GitVersion) }}
+  ingressClassName: {{ .Values.ingress.className }}
+  {{- end }}
+  {{- if .Values.ingress.enableTls }}
+  tls:
+    - hosts:
+        - {{ .Values.ingress.host }}
+        {{- range $host := .Values.ingress.additionalTLSHosts }}
+        - {{ $host }}
+        {{- end }}
+      secretName: {{ $fullName }}-tls
+  {{- end }}
+  rules:
     - host: {{ .Values.ingress.host }}
       http:
         paths:
-          - path: /api
+          - path: /health/api
             pathType: Prefix
             backend:
               service:
