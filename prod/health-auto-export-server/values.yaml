@@ -39,7 +39,7 @@ pvc:
   grafanaClaim0:
     storageRequest: 100Mi
   mongodbData:
-    storageRequest: 100Mi
+    storageRequest: 10Gi
 server:
   nodeSelector: {}
   service:
