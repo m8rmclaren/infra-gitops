@@ -50,7 +50,7 @@ spec:
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: {{ $fullName }}
+  name: {{ $fullName }}-server
   labels:
     {{- include "health-auto-export-server.labels" . | nindent 4 }}
   {{- with .Values.ingress.annotations }}
